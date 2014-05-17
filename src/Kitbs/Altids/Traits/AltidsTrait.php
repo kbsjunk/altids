@@ -1,8 +1,10 @@
 <?php namespace Kitbs\Altids\Traits;
 
+use Altids;
+use Kitbs\Altids\Exceptions\AltidNotFoundException;
+
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Altids;
 
 trait AltidsTrait {
 
@@ -173,7 +175,7 @@ trait AltidsTrait {
 
 		}
 
-		return $query->where($this->getKeyName(), null);
+		throw new AltidNotFoundException("Model does not use Hashids.");
 
 	}
 
@@ -193,7 +195,7 @@ trait AltidsTrait {
 
 		}
 
-		return $query;
+		throw new AltidNotFoundException("Model does not use Slugs.");
 
 	}
 
@@ -264,7 +266,7 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Hashid. (Convenience alias of findByAltId()).
+	 * Find a model by its Hashid. (Convenience alias of findByAltid()).
 	 *
 	 * @param  mixed  $hashid
 	 * @param  array  $columns
@@ -272,11 +274,15 @@ trait AltidsTrait {
 	 */
 	public static function findByHashid($hashid, $columns = array('*'))
 	{
-		return static::findByAltId($hashid, $columns);
+		$instance = new static;
+
+		if (!$instance->hasHashid()) { throw new AltidNotFoundException("Model does not use Hashids."); }
+
+		return static::findByAltid($hashid, $columns);
 	}
 
 	/**
-	 * Find a model by its Hashid or return new static. (Convenience alias of findByAltIdOrNew()).
+	 * Find a model by its Hashid or return new static. (Convenience alias of findByAltidOrNew()).
 	 *
 	 * @param  mixed  $hashid
 	 * @param  array  $columns
@@ -284,11 +290,15 @@ trait AltidsTrait {
 	 */
 	public static function findByHashidOrNew($hashid, $columns = array('*'))
 	{
-		return static::findByAltIdOrNew($hashid, $columns);
+		$instance = new static;
+
+		if (!$instance->hasHashid()) { throw new AltidNotFoundException("Model does not use Hashids."); }
+
+		return static::findByAltidOrNew($hashid, $columns);
 	}
 
 	/**
-	 * Find a model by its Hashid or throw an exception. (Convenience alias of findByAltIdOrFail()).
+	 * Find a model by its Hashid or throw an exception. (Convenience alias of findByAltidOrFail()).
 	 *
 	 * @param  mixed  $hashid
 	 * @param  array  $columns
@@ -298,11 +308,15 @@ trait AltidsTrait {
 	 */
 	public static function findByHashidOrFail($hashid, $columns = array('*'))
 	{
-		return static::findByAltIdOrFail($hashid, $columns);
+		$instance = new static;
+
+		if (!$instance->hasHashid()) { throw new AltidNotFoundException("Model does not use Hashids."); }
+
+		return static::findByAltidOrFail($hashid, $columns);
 	}
 
 	/**
-	 * Find a model by its Slug. (Convenience alias of findByAltId()).
+	 * Find a model by its Slug. (Convenience alias of findByAltid()).
 	 *
 	 * @param  mixed  $slug
 	 * @param  array  $columns
@@ -310,12 +324,17 @@ trait AltidsTrait {
 	 */
 	public static function findBySlug($slug, $columns = array('*'))
 	{
-		return static::findByAltId($slug, $columns);
+
+		$instance = new static;
+		
+		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
+
+		return static::findByAltid($slug, $columns);
 
 	}
 
 	/**
-	 * Find a model by its Slug or return new static. (Convenience alias of findByAltIdOrNew()).
+	 * Find a model by its Slug or return new static. (Convenience alias of findByAltidOrNew()).
 	 *
 	 * @param  mixed  $slug
 	 * @param  array  $columns
@@ -323,11 +342,15 @@ trait AltidsTrait {
 	 */
 	public static function findBySlugOrNew($slug, $columns = array('*'))
 	{
-		return static::findByAltIdOrNew($slug, $columns);
+		$instance = new static;
+		
+		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
+
+		return static::findByAltidOrNew($slug, $columns);
 	}
 
 	/**
-	 * Find a model by its Slug or throw an exception. (Convenience alias of findByAltIdOrFail()).
+	 * Find a model by its Slug or throw an exception. (Convenience alias of findByAltidOrFail()).
 	 *
 	 * @param  mixed  $slug
 	 * @param  array  $columns
@@ -337,6 +360,10 @@ trait AltidsTrait {
 	 */
 	public static function findBySlugOrFail($slug, $columns = array('*'))
 	{
-		return static::findByAltIdOrFail($slug, $columns);
+		$instance = new static;
+		
+		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
+
+		return static::findByAltidOrFail($slug, $columns);
 	}
 }
