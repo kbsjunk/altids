@@ -6,25 +6,18 @@ use Kitbs\Altids\Slugs;
 class Altids {
 
 	/**
-	 * All configurations of Hashids\Hashids currently in use.
+	 * All configurations of Altids\Hashids and Altids\Slugs currently in use.
 	 *
 	 * @var array
 	 */
-	private $hashids = [];
+	private $configs = [];
 
 	/**
-	 * All configurations of Altids\Slugs currently in use.
+	 * The default configurations for Altids\Hashids and Altids\Slugs.
 	 *
 	 * @var string
 	 */
-	private $slugs = [];
-
-	/**
-	 * The default configurations.
-	 *
-	 * @var string
-	 */
-	private $config = [];
+	private $defaults = [];
 
 	/**
 	 * Create a new Altids instance and collect default configuration.
@@ -35,8 +28,8 @@ class Altids {
 	{
 		global $app;
 		
-		$this->config['hashids'] = $app->config->get('altids::hashids');
-		$this->config['slugs']   = $app->config->get('altids::slugs');
+		$this->defaults['hashids'] = $app->config->get('altids::hashids');
+		$this->defaults['slugs']   = $app->config->get('altids::slugs');
 
 	}
 
@@ -48,17 +41,7 @@ class Altids {
 	 */
 	public function hashids(array $config = array())
 	{
-
-		$config = $this->getConfig('hashids', $config);
-		$key = $this->getConfigKey($config);
-
-		if (!isset($this->hashids[$key])) {
-
-			$this->hashids[$key] = new Hashids($config);
-
-		}
-
-		return $this->hashids[$key];
+		return $this->getConfigInstance('hashids', $config);
 	}
 
 	/**
@@ -69,17 +52,22 @@ class Altids {
 	 */
 	public function slugs(array $config = array())
 	{
+		return $this->getConfigInstance('slugs', $config);
+	}
 
-		$config = $this->getConfig('slugs', $config);
+	private function getConfigInstance($altid, array $config)
+	{
+		$config = $this->getConfig($altid, $config);
+		
 		$key = $this->getConfigKey($config);
 
-		if (!isset($this->slugs[$key])) {
+		if (!isset($this->configs[$altid][$key])) {
 
-			$this->slugs[$key] = new Slugs($config);
+			$this->configs[$altid][$key] = new Slugs($config);
 
 		}
 
-		return $this->slugs[$key];
+		return $this->configs[$altid][$key];
 	}
 
 	/**
@@ -88,7 +76,8 @@ class Altids {
 	 * @var mixed[] $config
 	 * @return string
 	 */
-	private function getConfigKey($config = array()) {
+	private function getConfigKey($config = array())
+	{
 		return md5(serialize($config));
 	}
 
@@ -104,10 +93,10 @@ class Altids {
 
 		$override = array_filter($config);
 
-		$config = $this->config[$altid];
+		$config = $this->defaults[$altid];
 
 		return array_merge($config, $override);
 	}
 
-	public function dumpConfigs() { dd(array_keys($this->hashids)); }
+	public function dumpConfigs() { echo '<pre>'; dd($this->configs); }
 }

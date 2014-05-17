@@ -4,6 +4,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\AliasLoader;
 
 use Kitbs\Altids\Altids;
+// use Event;
 
 class AltidsServiceProvider extends ServiceProvider {
 
@@ -34,6 +35,25 @@ class AltidsServiceProvider extends ServiceProvider {
 		$loader->alias('Hashids', 'Kitbs\Altids\Traits\HashidsTrait');
 		$loader->alias('Slugs', 'Kitbs\Altids\Traits\SlugsTrait');
 		
+		$this->app['events']->listen('eloquent.creating*', function($model)
+		{
+
+			if (@$model->hasSlug()) {
+				echo('creating');
+			}
+
+		});
+		
+		$this->app['events']->listen('eloquent.updating*', function($model)
+		{
+
+			if (@$model->hasSlug()) {
+				if (@$model->getSlugs()->getConfig('on_update')) {
+					echo('updating');
+				}
+			}
+
+		});
 
 	}
 

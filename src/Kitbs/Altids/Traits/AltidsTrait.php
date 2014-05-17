@@ -79,7 +79,9 @@ trait AltidsTrait {
 	 */
 	public function getSlugName()
 	{
-		return 'slug';
+		if ($this->hasSlug()) {
+			return $this->getSlugs()->getConfig('slug_field');
+		}
 	}
 
 	/**
@@ -89,9 +91,22 @@ trait AltidsTrait {
 	 */
 	public function getDisambigName()
 	{
-		return 'disambig';
+		if ($this->hasSlug()) {
+			return $this->getSlugs()->getConfig('disambig_field');
+		}
 	}
 
+	/**
+	 * Get the name of the Disambig Slug field for the model.
+	 *
+	 * @return string
+	 */
+	public function getDisambigSlugName()
+	{
+		if ($this->hasSlug()) {
+			return $this->getSlugs()->getConfig('disambig_slug_field');
+		}
+	}
 	/**
 	 * Get the value of the model's Slug (if in use).
 	 *
@@ -100,9 +115,19 @@ trait AltidsTrait {
 	public function getSlugAttribute()
 	{
 		if ($this->hasSlug()) {
-			// ...
+			return $this->getAttributeFromArray('slug');
+		}
+	}
 
-			return 'slug';
+	/**
+	 * Set the value of the model's Slug (if in use).
+	 *
+	 * @return string
+	 */
+	public function setSlugAttribute($slug)
+	{
+		if ($this->hasSlug()) {
+			$this->attributes['slug'] = trim($slug, $this->sep.'/');
 		}
 	}
 
@@ -273,20 +298,20 @@ trait AltidsTrait {
 
 		if (!empty($slug['disambig'])) {
 
-			if ($this->getSlugs()->getConfig('separate_disambig')) {
+			if ($this->getSlugs()->getConfig('disambig_slug_field')) {
 				return $query
 				->where($this->getSlugName(), $slug['slug'])
-				->where($this->getDisambigName(), $slug['disambig']);
+				->where($this->getDisambigSlugName(), $slug['disambig']);
 				
 			}
 			else {
-				return $query->where($this->getSlugName(), $slug['slug'].'/'.$slug['disambig']);
+				return $query->where($this->getSlugName(), $slug['slug'].$this->sep.$slug['disambig']);
 			}
 
 		}
 
 		return $query->where(function ($query) use ($slug) {
-			$query->where($this->getSlugName(), 'LIKE', $slug['slug'].'/%')
+			$query->where($this->getSlugName(), 'LIKE', $slug['slug'].$this->sep.'%')
 			->orWhere($this->getSlugName(), $slug['slug']);
 		});
 
@@ -300,7 +325,10 @@ trait AltidsTrait {
 	 */
 	private function _explodeSlug($slug) {
 		if (!is_array($slug)) {
-			$slug = explode($this->sep, trim($slug, $this->sep));
+
+			$seps = $this->sep.'/';
+			$slug = preg_split('%['.$seps.']%m', trim($slug, $seps));
+
 		}
 
 		$slug = array_slice(array_pad($slug, 2, null), 0, 2);
@@ -409,4 +437,5 @@ trait AltidsTrait {
 
 		return static::findByAltidOrFail($slug, $columns);
 	}
+
 }

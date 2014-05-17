@@ -57,7 +57,7 @@ return array(
 	| Store Model's Disambiguation in Separate Field
 	|--------------------------------------------------------------------------
 	|
-	| The model field where the disambiguation will be saved.
+	| The model field where the slugged disambiguation will be saved.
 	| There should not be a corresponding setFooAttribute() mutator method, as
 	| this could interfere with the functionality.
 	|
@@ -67,7 +67,7 @@ return array(
 	|
 	*/
 
-	'separate_disambig' => false,
+	'disambig_slug_field' => 'disambig_slug',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -76,7 +76,7 @@ return array(
 	|
 	| The method used to display the slug and disambiguation fields together.
 	| The slug and disambiguation will always be stored in the database
-	| separated by '/'.
+	| separated by '|' (pipe character).
 	|
 	| Options are:
     | - '/': URL slash, e.g. "Slug/Disambig"
@@ -150,7 +150,7 @@ return array(
 	|
 	*/
 
-	'on_update' => false,
+	'on_update' => true,
 
 	/*
 	|--------------------------------------------------------------------------
