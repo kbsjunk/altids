@@ -158,7 +158,7 @@ trait AltidsTrait {
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
 	 */
-	public static function find($altid, $columns = array('*'))
+	public static function findByAltId($altid, $columns = array('*'))
 	{
 		if (is_array($altid) && empty($altid)) return new Collection;
 
@@ -170,7 +170,7 @@ trait AltidsTrait {
 			
 			if (empty($altid)) return null;
 
-			return parent::find($altid, $columns);
+			return $instance->find($altid, $columns);
 
 		} elseif ($instance->hasSlug()) {
 
