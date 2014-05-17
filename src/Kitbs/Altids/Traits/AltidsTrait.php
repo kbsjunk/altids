@@ -5,18 +5,6 @@ use Altids;
 
 trait AltidsTrait {
 
-	private $hashids;
-	private $slugs;
-
-	public function getHashids() {
-
-		if (is_null($this->hashids)) {
- 			$this->hashids = Altids::hashids((array) @$this->hashidsConfig);
-		}
-
-		return $this->hashids;
-	}
-
 	/**
 	 * Determine if a model uses a Hashid.
 	 *
@@ -75,8 +63,6 @@ trait AltidsTrait {
 	{
 
 		if ($this->hasHashid()) {
-			var_dump($this->getHashids());
-			// return $this->getHashids();
 			return $this->getHashids()->encrypt($this->getKey());
 		}
 	}
@@ -90,8 +76,19 @@ trait AltidsTrait {
 	{
 		if ($this->hasSlug()) {
 			// ...
+			
 			return 'slug';
 		}
+	}
+
+	/**
+	 * Get an instace of the Altids Hashids class using the model's configuration.
+	 *
+	 * @return \Kitbs\Altids\Altids
+	 */
+	public function getHashids()
+	{
+		return Altids::hashids((array) @$this->hashidsConfig);
 	}
 
 	/**

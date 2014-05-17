@@ -4,25 +4,42 @@ use Hashids\Hashids;
 
 class Altids {
 
-	private $hashids;
-	private $hashidsConfig;
-	private $lastHashidsConfig;
+	private $hashids = [];
+	private $hashidsConfig = [];
 
-	private $slugs;
-	private $slugsConfig;
+	private $slugs = [];
 
 	public function __construct()
 	{
 		global $app;
 
-		$this->lastHashidsConfig = $this->hashidsConfig = $app->config->get('altids::hashids');
-
-		$this->hashids($this->hashidsConfig);
+		$this->hashidsConfig = $app->config->get('altids::hashids');
 
 	}
 
-	public function hashids($salt = false, $length = false, $alphabet = false)
+	public function hashids($salt = '', $length = 0, $alphabet = '')
 	{
+
+		$config = $this->getHashidsConfig($salt, $length, $alphabet);
+		$key = $this->getConfigKey($config);
+
+		if (!isset($this->hashids[$key])) {
+
+			extract($config);
+			$this->hashids[$key] = new Hashids($salt, $length, $alphabet);
+
+		}
+
+		return $this->hashids[$key];
+	}
+
+	private function getConfigKey($config) {
+		return md5(serialize((array) $config));
+	}
+
+	private function getHashidsConfig($salt = false, $length = false, $alphabet = false)
+	{
+
 		if (is_array($salt) && !$length && !$alphabet) {
 			$config = $salt;
 		}
@@ -30,26 +47,10 @@ class Altids {
 			$config = compact('salt', 'length', 'alphabet');
 		}
 
-		$config = $this->getHashidsConfig($config);
-
-		if ($config !== $this->lastHashidsConfig) {
-
-			extract($config);
-
-			$this->hashids = new Hashids($salt, $length, $alphabet);
-			$this->lastHashidsConfig = $config;
-
-		}
-
-		return $this->hashids;
-	}
-
-	private function getHashidsConfig($config)
-	{
 		$override = array_filter($config);
 
 		$config = $this->hashidsConfig;
-var_dump(array_merge($config, $override));
+
 		return array_merge($config, $override);
 	}
 

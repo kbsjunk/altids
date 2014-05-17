@@ -31,7 +31,8 @@ class AltidsServiceProvider extends ServiceProvider {
 		$loader = AliasLoader::getInstance();
 
 		$loader->alias('Altids', 'Kitbs\Altids\Facades\AltidsFacade');
-		$loader->alias('AltidsTrait', 'Kitbs\Altids\Traits\AltidsTrait');
+		$loader->alias('Hashids', 'Kitbs\Altids\Traits\HashidsTrait');
+		$loader->alias('Slugs', 'Kitbs\Altids\Traits\SlugsTrait');
 		
 
 	}
