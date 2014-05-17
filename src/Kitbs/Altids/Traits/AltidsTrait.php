@@ -171,6 +171,12 @@ trait AltidsTrait {
 
 	}
 
+	/**
+	 * Return the appropriate where clause depending on the value of the Altid.
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @param  mixed $altid
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
 	private function _chooseWhereIn($query, $altid)
 	{
 
@@ -190,5 +196,82 @@ trait AltidsTrait {
 			return $query->where($this->getKeyName(), $altid);
 
 		}
+	}
+
+	/**
+	 * Find a model by its Hashid. (Convenience alias of findByAltId()).
+	 *
+	 * @param  mixed  $hashid
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 */
+	public static function findByHashid($hashid, $columns = array('*'))
+	{
+		return $this->findByAltId($hashid, $columns);
+	}
+
+	/**
+	 * Find a model by its Hashid or return new static. (Convenience alias of findByAltIdOrNew()).
+	 *
+	 * @param  mixed  $hashid
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 */
+	public static function findByHashidOrNew($hashid, $columns = array('*'))
+	{
+		return $this->findByAltIdOrNew($hashid, $columns);
+	}
+
+	/**
+	 * Find a model by its Hashid or throw an exception. (Convenience alias of findByAltIdOrFail()).
+	 *
+	 * @param  mixed  $hashid
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 *
+	 * @throws ModelNotFoundException
+	 */
+	public static function findByHashidOrFail($hashid, $columns = array('*'))
+	{
+		return $this->findByAltIdOrFail($hashid, $columns);
+	}
+
+	/**
+	 * Find a model by its Slug. (Convenience alias of findByAltId()).
+	 *
+	 * @param  mixed  $slug
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 */
+	public static function findBySlug($slug, $columns = array('*'))
+	{
+		return $this->findByAltId($slug, $columns);
+
+	}
+
+	/**
+	 * Find a model by its Slug or return new static. (Convenience alias of findByAltIdOrNew()).
+	 *
+	 * @param  mixed  $slug
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 */
+	public static function findBySlugOrNew($slug, $columns = array('*'))
+	{
+		return $this->findByAltIdOrNew($slug, $columns);
+	}
+
+	/**
+	 * Find a model by its Slug or throw an exception. (Convenience alias of findByAltIdOrFail()).
+	 *
+	 * @param  mixed  $slug
+	 * @param  array  $columns
+	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
+	 *
+	 * @throws ModelNotFoundException
+	 */
+	public static function findBySlugOrFail($slug, $columns = array('*'))
+	{
+		return $this->findByAltIdOrFail($slug, $columns);
 	}
 }

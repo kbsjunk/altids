@@ -103,5 +103,6 @@ class Altids {
 
 		return array_merge($config, $override);
 	}
+
 	// public function dumpConfigs() { dd(array_keys($this->hashids)); }
 }
