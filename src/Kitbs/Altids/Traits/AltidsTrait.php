@@ -11,30 +11,30 @@ trait AltidsTrait {
 	private $sep = '|';
 
 	/**
-	 * Determine if a model uses a Hashid.
-	 *
-	 * @return bool
-	 */
+	* Determine if a model uses a Hashid.
+	*
+	* @return bool
+	*/
 	public function hasHashid()
 	{
 		return @$this->altid == 'hashid';
 	}
 
 	/**
-	 * Determine if a model uses a Slug.
-	 *
-	 * @return bool
-	 */
+	* Determine if a model uses a Slug.
+	*
+	* @return bool
+	*/
 	public function hasSlug()
 	{
 		return @$this->altid == 'slug';
 	}
 
 	/**
-	 * Get the Altid (or default to primary key) for the model.
-	 *
-	 * @return string
-	 */
+	* Get the Altid (or default to primary key) for the model.
+	*
+	* @return string
+	*/
 	public function getAltidName()
 	{
 		if (in_array(@$this->altid, ['hashid', 'slug'])) {
@@ -44,10 +44,10 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get the value of the model's Altid (if in use).
-	 *
-	 * @return string
-	 */
+	* Get the value of the model's Altid (if in use).
+	*
+	* @return string
+	*/
 	public function getAltid()
 	{
 		if ($this->hasHashid()) {
@@ -60,10 +60,10 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get the value of the model's Hashid (if in use).
-	 *
-	 * @return string
-	 */
+	* Get the value of the model's Hashid (if in use).
+	*
+	* @return string
+	*/
 	public function getHashidAttribute()
 	{
 
@@ -73,10 +73,10 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get the name of the Slug field for the model.
-	 *
-	 * @return string
-	 */
+	* Get the name of the Slug field for the model.
+	*
+	* @return string
+	*/
 	public function getSlugName()
 	{
 		if ($this->hasSlug()) {
@@ -85,10 +85,10 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get the name of the Disambig field for the model.
-	 *
-	 * @return string
-	 */
+	* Get the name of the Disambig field for the model.
+	*
+	* @return string
+	*/
 	public function getDisambigName()
 	{
 		if ($this->hasSlug()) {
@@ -97,21 +97,22 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get the name of the Disambig Slug field for the model.
-	 *
-	 * @return string
-	 */
+	* Get the name of the Disambig Slug field for the model.
+	*
+	* @return string
+	*/
 	public function getDisambigSlugName()
 	{
 		if ($this->hasSlug()) {
 			return $this->getSlugs()->getConfig('disambig_slug_field');
 		}
 	}
+
 	/**
-	 * Get the value of the model's Slug (if in use).
-	 *
-	 * @return string
-	 */
+	* Get the value of the model's Slug (if in use).
+	*
+	* @return string
+	*/
 	public function getSlugAttribute()
 	{
 		if ($this->hasSlug()) {
@@ -120,10 +121,10 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Set the value of the model's Slug (if in use).
-	 *
-	 * @return string
-	 */
+	* Set the value of the model's Slug (if in use).
+	*
+	* @return string
+	*/
 	public function setSlugAttribute($slug)
 	{
 		if ($this->hasSlug()) {
@@ -132,32 +133,32 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Get an instace of the Altids Hashids class using the model's configuration.
-	 *
-	 * @return \Kitbs\Altids\Hashids
-	 */
+	* Get an instace of the Altids Hashids class using the model's configuration.
+	*
+	* @return \Kitbs\Altids\Hashids
+	*/
 	public function getHashids()
 	{
 		return Altids::hashids((array) @$this->hashidsConfig);
 	}
 
 	/**
-	 * Get an instace of the Altids Slugs class using the model's configuration.
-	 *
-	 * @return \Kitbs\Altids\Slugs
-	 */
+	* Get an instace of the Altids Slugs class using the model's configuration.
+	*
+	* @return \Kitbs\Altids\Slugs
+	*/
 	public function getSlugs()
 	{
 		return Altids::slugs((array) @$this->slugsConfig);
 	}
 
 	/**
-	 * Find a model by its Altid.
-	 *
-	 * @param  mixed  $altid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Altid.
+	*
+	* @param  mixed  $altid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findByAltId($altid, $columns = array('*'))
 	{
 		if (is_array($altid) && empty($altid)) return new Collection;
@@ -167,7 +168,7 @@ trait AltidsTrait {
 		if ($instance->hasHashid()) {
 
 			$altid = $instance->getHashids()->decrypt($altid);
-			
+
 			if (empty($altid)) return null;
 
 			return $instance->find($altid, $columns);
@@ -183,12 +184,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Altid or return new static.
-	 *
-	 * @param  mixed  $altid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Altid or return new static.
+	*
+	* @param  mixed  $altid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findByAltidOrNew($altid, $columns = array('*'))
 	{
 		if ( ! is_null($model = static::findByAltid($altid, $columns))) return $model;
@@ -197,14 +198,14 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Altid or throw an exception.
-	 *
-	 * @param  mixed  $altid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 *
-	 * @throws ModelNotFoundException
-	 */
+	* Find a model by its Altid or throw an exception.
+	*
+	* @param  mixed  $altid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*
+	* @throws ModelNotFoundException
+	*/
 	public static function findByAltidOrFail($altid, $columns = array('*'))
 	{
 		if ( ! is_null($model = static::findByAltid($altid, $columns))) return $model;
@@ -213,12 +214,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Spoofs a whereHashid method to allow it to be used in the Query Builder.
-	 *
-	 * @param  \Illuminate\Database\Eloquent\Builder  $query
-	 * @param  mixed $altid
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
+	* Spoofs a whereHashid method to allow it to be used in the Query Builder.
+	*
+	* @param  \Illuminate\Database\Eloquent\Builder  $query
+	* @param  mixed $altid
+	* @return \Illuminate\Database\Eloquent\Builder
+	*/
 	public function scopeWhereHashid($query, $altid)
 	{
 
@@ -235,12 +236,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Spoofs a whereSlug method to allow it to be used in the Query Builder.
-	 *
-	 * @param  \Illuminate\Database\Eloquent\Builder  $query
-	 * @param  mixed $slug
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
+	* Spoofs a whereSlug method to allow it to be used in the Query Builder.
+	*
+	* @param  \Illuminate\Database\Eloquent\Builder  $query
+	* @param  mixed $slug
+	* @return \Illuminate\Database\Eloquent\Builder
+	*/
 	public function scopeWhereSlug($query, $slug)
 	{
 
@@ -255,12 +256,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Return the appropriate where clause depending on the value of the Altid.
-	 * 
-	 * @param  \Illuminate\Database\Eloquent\Builder  $query
-	 * @param  mixed $altid
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
+	* Return the appropriate where clause depending on the value of the Altid.
+	* 
+	* @param  \Illuminate\Database\Eloquent\Builder  $query
+	* @param  mixed $altid
+	* @return \Illuminate\Database\Eloquent\Builder
+	*/
 	private function _chooseWhereIn($query, $altid)
 	{
 
@@ -283,12 +284,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Return the appropriate where clause depending on the value of the Slug and Disambig, if present.
-	 *
-	 * @param  \Illuminate\Database\Eloquent\Builder  $query
-	 * @param  mixed $slug
-	 * @return \Illuminate\Database\Eloquent\Builder
-	 */
+	* Return the appropriate where clause depending on the value of the Slug and Disambig, if present.
+	*
+	* @param  \Illuminate\Database\Eloquent\Builder  $query
+	* @param  mixed $slug
+	* @return \Illuminate\Database\Eloquent\Builder
+	*/
 	private function _chooseWhereSlug($query, $slug)
 	{
 
@@ -300,7 +301,7 @@ trait AltidsTrait {
 				return $query
 				->where($this->getSlugName(), $slug['slug'])
 				->where($disambigSlugName, $slug['disambig']);
-				
+
 			}
 			else {
 				return $query->where($this->getSlugName(), $slug['slug'].$this->sep.$slug['disambig']);
@@ -316,11 +317,11 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Return an array of the slug and the disambig from a string.
-	 * 
-	 * @param  mixed  $slug
-	 * @return string[]
-	 */
+	* Return an array of the slug and the disambig from a string.
+	* 
+	* @param  mixed  $slug
+	* @return string[]
+	*/
 	private function _explodeSlug($slug) {
 		if (!is_array($slug)) {
 
@@ -335,12 +336,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Hashid. (Convenience alias of findByAltid()).
-	 *
-	 * @param  mixed  $hashid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Hashid. (Convenience alias of findByAltid()).
+	*
+	* @param  mixed  $hashid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findByHashid($hashid, $columns = array('*'))
 	{
 		$instance = new static;
@@ -351,12 +352,12 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Hashid or return new static. (Convenience alias of findByAltidOrNew()).
-	 *
-	 * @param  mixed  $hashid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Hashid or return new static. (Convenience alias of findByAltidOrNew()).
+	*
+	* @param  mixed  $hashid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findByHashidOrNew($hashid, $columns = array('*'))
 	{
 		$instance = new static;
@@ -367,14 +368,14 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Hashid or throw an exception. (Convenience alias of findByAltidOrFail()).
-	 *
-	 * @param  mixed  $hashid
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 *
-	 * @throws ModelNotFoundException
-	 */
+	* Find a model by its Hashid or throw an exception. (Convenience alias of findByAltidOrFail()).
+	*
+	* @param  mixed  $hashid
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*
+	* @throws ModelNotFoundException
+	*/
 	public static function findByHashidOrFail($hashid, $columns = array('*'))
 	{
 		$instance = new static;
@@ -385,17 +386,17 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Slug. (Convenience alias of findByAltid()).
-	 *
-	 * @param  mixed  $slug
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Slug. (Convenience alias of findByAltid()).
+	*
+	* @param  mixed  $slug
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findBySlug($slug, $columns = array('*'))
 	{
 
 		$instance = new static;
-		
+
 		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
 
 		return static::findByAltid($slug, $columns);
@@ -403,34 +404,34 @@ trait AltidsTrait {
 	}
 
 	/**
-	 * Find a model by its Slug or return new static. (Convenience alias of findByAltidOrNew()).
-	 *
-	 * @param  mixed  $slug
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 */
+	* Find a model by its Slug or return new static. (Convenience alias of findByAltidOrNew()).
+	*
+	* @param  mixed  $slug
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*/
 	public static function findBySlugOrNew($slug, $columns = array('*'))
 	{
 		$instance = new static;
-		
+
 		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
 
 		return static::findByAltidOrNew($slug, $columns);
 	}
 
 	/**
-	 * Find a model by its Slug or throw an exception. (Convenience alias of findByAltidOrFail()).
-	 *
-	 * @param  mixed  $slug
-	 * @param  array  $columns
-	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
-	 *
-	 * @throws ModelNotFoundException
-	 */
+	* Find a model by its Slug or throw an exception. (Convenience alias of findByAltidOrFail()).
+	*
+	* @param  mixed  $slug
+	* @param  array  $columns
+	* @return \Illuminate\Database\Eloquent\Model|Collection|static
+	*
+	* @throws ModelNotFoundException
+	*/
 	public static function findBySlugOrFail($slug, $columns = array('*'))
 	{
 		$instance = new static;
-		
+
 		if (!$instance->hasSlug()) { throw new AltidNotFoundException("Model does not use Slugs."); }
 
 		return static::findByAltidOrFail($slug, $columns);
