@@ -1,6 +1,7 @@
 <?php namespace Kitbs\Altids\Traits;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Altids;
 
 trait AltidsTrait {
@@ -104,19 +105,21 @@ trait AltidsTrait {
 
 		$instance = new static;
 
-		$altidName = $instance->getAltidName();
+		if ($instance->hasHashid()) {
 
-		if ($altidName == 'hashid') {
-
-			$altid = $this->getHashids()->decrypt($altid);
+			$altid = $instance->getHashids()->decrypt($altid);
 			
 			if (empty($altid)) return null;
 
 			return $instance->find($altid, $columns);
 
+		} elseif ($instance->hasSlug()) {
+
+			return $instance->_chooseWhereSlug($instance->newQuery(), $altid)->get($columns);
+
 		} else {
 
-			return $this->_chooseWhereIn($instance->newQuery(), $altid)->get($columns);
+			return $instance->_chooseWhereIn($instance->newQuery(), $altid)->get($columns);
 
 		}
 
@@ -154,6 +157,7 @@ trait AltidsTrait {
 
 	/**
 	 * Spoofs a whereHashid method to allow it to be used in the Query Builder.
+	 *
 	 * @param  \Illuminate\Database\Eloquent\Builder  $query
 	 * @param  mixed $altid
 	 * @return \Illuminate\Database\Eloquent\Builder
@@ -169,10 +173,33 @@ trait AltidsTrait {
 
 		}
 
+		return $query->where($this->getKeyName(), null);
+
+	}
+
+	/**
+	 * Spoofs a whereSlug method to allow it to be used in the Query Builder.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @param  mixed $slug
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	public function scopeWhereSlug($query, $slug)
+	{
+
+		if ($this->hasSlug()) {
+
+			return $this->_chooseWhereSlug($query, $slug);
+
+		}
+
+		return $query;
+
 	}
 
 	/**
 	 * Return the appropriate where clause depending on the value of the Altid.
+	 * 
 	 * @param  \Illuminate\Database\Eloquent\Builder  $query
 	 * @param  mixed $altid
 	 * @return \Illuminate\Database\Eloquent\Builder
@@ -199,6 +226,44 @@ trait AltidsTrait {
 	}
 
 	/**
+	 * Return the appropriate where clause depending on the value of the Slug and Disambig, if present.
+	 *
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @param  mixed $slug
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
+	private function _chooseWhereSlug($query, $slug)
+	{
+
+		$slug = $this->_explodeSlug($slug);
+
+		if (!empty($slug['disambig'])) {
+
+			$query->where($this->getDisambigName(), $slug['disambig']);
+
+		}
+
+		return $query->where($this->getSlugName(), $slug['slug']);
+
+	}
+
+	/**
+	 * Return an array of the slug and the disambig from a string.
+	 * 
+	 * @param  mixed  $slug
+	 * @return string[]
+	 */
+	private function _explodeSlug($slug) {
+		if (!is_array($slug)) {
+			$slug = explode('/', trim($slug, '/'));
+		}
+
+		$slug = array_slice(array_pad($slug, 2, null), 0, 2);
+
+		return array_combine(['slug', 'disambig'], $slug);
+	}
+
+	/**
 	 * Find a model by its Hashid. (Convenience alias of findByAltId()).
 	 *
 	 * @param  mixed  $hashid
@@ -207,7 +272,7 @@ trait AltidsTrait {
 	 */
 	public static function findByHashid($hashid, $columns = array('*'))
 	{
-		return $this->findByAltId($hashid, $columns);
+		return static::findByAltId($hashid, $columns);
 	}
 
 	/**
@@ -219,7 +284,7 @@ trait AltidsTrait {
 	 */
 	public static function findByHashidOrNew($hashid, $columns = array('*'))
 	{
-		return $this->findByAltIdOrNew($hashid, $columns);
+		return static::findByAltIdOrNew($hashid, $columns);
 	}
 
 	/**
@@ -233,7 +298,7 @@ trait AltidsTrait {
 	 */
 	public static function findByHashidOrFail($hashid, $columns = array('*'))
 	{
-		return $this->findByAltIdOrFail($hashid, $columns);
+		return static::findByAltIdOrFail($hashid, $columns);
 	}
 
 	/**
@@ -245,7 +310,7 @@ trait AltidsTrait {
 	 */
 	public static function findBySlug($slug, $columns = array('*'))
 	{
-		return $this->findByAltId($slug, $columns);
+		return static::findByAltId($slug, $columns);
 
 	}
 
@@ -258,7 +323,7 @@ trait AltidsTrait {
 	 */
 	public static function findBySlugOrNew($slug, $columns = array('*'))
 	{
-		return $this->findByAltIdOrNew($slug, $columns);
+		return static::findByAltIdOrNew($slug, $columns);
 	}
 
 	/**
@@ -272,6 +337,6 @@ trait AltidsTrait {
 	 */
 	public static function findBySlugOrFail($slug, $columns = array('*'))
 	{
-		return $this->findByAltIdOrFail($slug, $columns);
+		return static::findByAltIdOrFail($slug, $columns);
 	}
 }
