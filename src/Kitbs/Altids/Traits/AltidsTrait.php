@@ -76,7 +76,7 @@ trait AltidsTrait {
 	{
 		if ($this->hasSlug()) {
 			// ...
-			
+
 			return 'slug';
 		}
 	}
@@ -152,6 +152,12 @@ trait AltidsTrait {
 		throw with(new ModelNotFoundException)->setModel(get_called_class());
 	}
 
+	/**
+	 * Spoofs a whereHashid method to allow it to be used in the Query Builder.
+	 * @param  \Illuminate\Database\Eloquent\Builder  $query
+	 * @param  mixed $altid
+	 * @return \Illuminate\Database\Eloquent\Builder
+	 */
 	public function scopeWhereHashid($query, $altid)
 	{
 
@@ -185,5 +191,4 @@ trait AltidsTrait {
 
 		}
 	}
-
 }

@@ -13,11 +13,12 @@ return array(
 	|
 	| If you change the salt, the generated hash will change.
 	|
-	| Default: '' --> Config::get('app.key');
+	| Default: Config::get('app.key')
+	| Set to '' use no salt and allow Hashids to be decrypted by others.
 	|
 	*/
 
-	'salt' => '',
+	'salt' => Config::get('app.key'),
 
 	/*
 	|--------------------------------------------------------------------------
