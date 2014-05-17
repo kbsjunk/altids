@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait AltidsTrait {
 
+	private $sep = '|';
+
 	/**
 	 * Determine if a model uses a Hashid.
 	 *
@@ -71,6 +73,26 @@ trait AltidsTrait {
 	}
 
 	/**
+	 * Get the name of the Slug field for the model.
+	 *
+	 * @return string
+	 */
+	public function getSlugName()
+	{
+		return 'slug';
+	}
+
+	/**
+	 * Get the name of the Disambig field for the model.
+	 *
+	 * @return string
+	 */
+	public function getDisambigName()
+	{
+		return 'disambig';
+	}
+
+	/**
 	 * Get the value of the model's Slug (if in use).
 	 *
 	 * @return string
@@ -87,11 +109,21 @@ trait AltidsTrait {
 	/**
 	 * Get an instace of the Altids Hashids class using the model's configuration.
 	 *
-	 * @return \Kitbs\Altids\Altids
+	 * @return \Kitbs\Altids\Hashids
 	 */
 	public function getHashids()
 	{
 		return Altids::hashids((array) @$this->hashidsConfig);
+	}
+
+	/**
+	 * Get an instace of the Altids Slugs class using the model's configuration.
+	 *
+	 * @return \Kitbs\Altids\Slugs
+	 */
+	public function getSlugs()
+	{
+		return Altids::slugs((array) @$this->slugsConfig);
 	}
 
 	/**
@@ -241,11 +273,22 @@ trait AltidsTrait {
 
 		if (!empty($slug['disambig'])) {
 
-			$query->where($this->getDisambigName(), $slug['disambig']);
+			if ($this->getSlugs()->getConfig('separate_disambig')) {
+				return $query
+				->where($this->getSlugName(), $slug['slug'])
+				->where($this->getDisambigName(), $slug['disambig']);
+				
+			}
+			else {
+				return $query->where($this->getSlugName(), $slug['slug'].'/'.$slug['disambig']);
+			}
 
 		}
 
-		return $query->where($this->getSlugName(), $slug['slug']);
+		return $query->where(function ($query) use ($slug) {
+			$query->where($this->getSlugName(), 'LIKE', $slug['slug'].'/%')
+			->orWhere($this->getSlugName(), $slug['slug']);
+		});
 
 	}
 
@@ -257,7 +300,7 @@ trait AltidsTrait {
 	 */
 	private function _explodeSlug($slug) {
 		if (!is_array($slug)) {
-			$slug = explode('/', trim($slug, '/'));
+			$slug = explode($this->sep, trim($slug, $this->sep));
 		}
 
 		$slug = array_slice(array_pad($slug, 2, null), 0, 2);

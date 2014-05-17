@@ -1,6 +1,7 @@
 <?php namespace Kitbs\Altids;
 
-use Hashids\Hashids;
+use Kitbs\Altids\Hashids;
+use Kitbs\Altids\Slugs;
 
 class Altids {
 
@@ -12,13 +13,6 @@ class Altids {
 	private $hashids = [];
 
 	/**
-	 * The default Hashids configuration.
-	 *
-	 * @var string
-	 */
-	private $hashidsConfig = [];
-
-	/**
 	 * All configurations of Altids\Slugs currently in use.
 	 *
 	 * @var string
@@ -26,11 +20,11 @@ class Altids {
 	private $slugs = [];
 
 	/**
-	 * The default Altids\Slugs configuration.
+	 * The default configurations.
 	 *
 	 * @var string
 	 */
-	private $slugsConfig = [];
+	private $config = [];
 
 	/**
 	 * Create a new Altids instance and collect default configuration.
@@ -40,33 +34,52 @@ class Altids {
 	public function __construct()
 	{
 		global $app;
-
-		$this->hashidsConfig = $app->config->get('altids::hashids');
+		
+		$this->config['hashids'] = $app->config->get('altids::hashids');
+		$this->config['slugs']   = $app->config->get('altids::slugs');
 
 	}
 
 	/**
-	 * Return a new or existing instance of Hashids\Hashids with the given configuration.
+	 * Return a new or existing instance of \Altids\Hashids with the given configuration.
 	 *
-	 * @var string  $salt
-	 * @var int     $length
-	 * @var string  $alphabet
-	 * @return \Hashids\Hashids
+	 * @var mixed[]  $config
+	 * @return \Altids\Hashids
 	 */
-	public function hashids($salt = '', $length = 0, $alphabet = '')
+	public function hashids(array $config = array())
 	{
 
-		$config = $this->getHashidsConfig($salt, $length, $alphabet);
+		$config = $this->getConfig('hashids', $config);
 		$key = $this->getConfigKey($config);
 
 		if (!isset($this->hashids[$key])) {
 
-			extract($config);
-			$this->hashids[$key] = new Hashids($salt, $length, $alphabet);
+			$this->hashids[$key] = new Hashids($config);
 
 		}
 
 		return $this->hashids[$key];
+	}
+
+	/**
+	 * Return a new or existing instance of \Altids\Slugs with the given configuration.
+	 *
+	 * @var mixed[]  $config
+	 * @return \Altids\Slugs
+	 */
+	public function slugs(array $config = array())
+	{
+
+		$config = $this->getConfig('slugs', $config);
+		$key = $this->getConfigKey($config);
+
+		if (!isset($this->slugs[$key])) {
+
+			$this->slugs[$key] = new Slugs($config);
+
+		}
+
+		return $this->slugs[$key];
 	}
 
 	/**
@@ -75,34 +88,26 @@ class Altids {
 	 * @var mixed[] $config
 	 * @return string
 	 */
-	private function getConfigKey(array $config) {
+	private function getConfigKey($config = array()) {
 		return md5(serialize($config));
 	}
 
 	/**
 	 * Combine the supplied configuration with the default configuration.
 	 *
-	 * @var string  $salt
-	 * @var int     $length
-	 * @var string  $alphabet
+	 * @var string   $altid
+	 * @var mixed[]  $config
 	 * @return array
 	 */
-	private function getHashidsConfig($salt = false, $length = false, $alphabet = false)
+	private function getConfig($altid, array $config)
 	{
-
-		if (is_array($salt) && !$length && !$alphabet) {
-			$config = $salt;
-		}
-		else {
-			$config = compact('salt', 'length', 'alphabet');
-		}
 
 		$override = array_filter($config);
 
-		$config = $this->hashidsConfig;
+		$config = $this->config[$altid];
 
 		return array_merge($config, $override);
 	}
 
-	// public function dumpConfigs() { dd(array_keys($this->hashids)); }
+	public function dumpConfigs() { dd(array_keys($this->hashids)); }
 }

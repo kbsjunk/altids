@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'from_field' => 'name',
+	'title_field' => 'name',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -31,6 +31,66 @@ return array(
 	*/
 
 	'slug_field' => 'slug',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Model's Default Disambiguation Field
+	|--------------------------------------------------------------------------
+	|
+	| The default model field that represents the model's disambiguation field,
+	| that will be used in the slug if it is not unique.
+	| 
+	| There should not be a corresponding setFooAttribute() mutator method, as
+	| this could interfere with the functionality.
+	|
+	| Set a common field name here and optionally override for individual models.
+	|
+	| If false, the disambiguation will be saved in the slug field, separated by
+	| the delimiter specified in 'disambig_delimiter'.
+	|
+	*/
+
+	'disambig_field' => 'disambig',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Store Model's Disambiguation in Separate Field
+	|--------------------------------------------------------------------------
+	|
+	| The model field where the disambiguation will be saved.
+	| There should not be a corresponding setFooAttribute() mutator method, as
+	| this could interfere with the functionality.
+	|
+	| Set a common field name here and optionally override for individual models.
+	|
+	| If false, the disambiguation will be saved in the slug field, separated by '/'.
+	|
+	*/
+
+	'separate_disambig' => false,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Disambiguation Delimiter
+	|--------------------------------------------------------------------------
+	|
+	| The method used to display the slug and disambiguation fields together.
+	| The slug and disambiguation will always be stored in the database
+	| separated by '/'.
+	|
+	| Options are:
+    | - '/': URL slash, e.g. "Slug/Disambig"
+	| - '()': Round Brackets, e.g. "Slug (Disambig)"
+	| - '-': Dash, e.g. "Slug - Disambig"
+	|
+	| Any other value will default to URL slash.
+	|
+	| Whichever value is used, the delimiter character(s) will be stripped
+	| from within the slug and disambig values themselves.
+	|
+	*/
+
+	'disambig_delimiter' => '/',
 
 	/*
 	|--------------------------------------------------------------------------
