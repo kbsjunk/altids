@@ -1,0 +1,23 @@
+{
+    "name": "kitbs/altids",
+    "description": "Alternative IDs (slug, hash) for Laravel Eloquent Models",
+    "authors": [
+        {
+            "name": "KitBS",
+            "email": "mail@kitbs.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.1.*",
+        "hashids/hashids": "0.3.*@dev"
+    },
+    "autoload": {
+        "classmap": [
+        ],
+        "psr-0": {
+            "Kitbs\\Altids\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
