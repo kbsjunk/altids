@@ -1,8 +1,5 @@
 <?php namespace Kitbs\Altids;
 
-use Kitbs\Altids\Hashids;
-use Kitbs\Altids\Slugs;
-
 class Altids {
 
 	/**
@@ -58,12 +55,13 @@ class Altids {
 	private function getConfigInstance($altid, array $config)
 	{
 		$config = $this->getConfig($altid, $config);
-		
+
 		$key = $this->getConfigKey($config);
 
 		if (!isset($this->configs[$altid][$key])) {
 
-			$this->configs[$altid][$key] = new Slugs($config);
+			$class = '\\Kitbs\\Altids\\'.ucfirst($altid);
+			$this->configs[$altid][$key] = new $class($config);
 
 		}
 
@@ -85,18 +83,18 @@ class Altids {
 	 * Combine the supplied configuration with the default configuration.
 	 *
 	 * @var string   $altid
-	 * @var mixed[]  $config
+	 * @var mixed[]  $override
 	 * @return array
 	 */
-	private function getConfig($altid, array $config)
+	private function getConfig($altid, array $override)
 	{
 
-		$override = array_filter($config);
+		// $override = array_filter($config);
 
 		$config = $this->defaults[$altid];
 
 		return array_merge($config, $override);
 	}
 
-	public function dumpConfigs() { echo '<pre>'; dd($this->configs); }
+	// public function dumpConfigs() { echo '<pre>'; dd($this->configs); }
 }

@@ -67,7 +67,7 @@ return array(
 	|
 	*/
 
-	'disambig_slug_field' => 'disambig_slug',
+	'disambig_slug_field' => false,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -150,7 +150,7 @@ return array(
 	|
 	*/
 
-	'on_update' => true,
+	'on_update' => false,
 
 	/*
 	|--------------------------------------------------------------------------

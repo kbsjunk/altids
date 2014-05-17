@@ -158,7 +158,7 @@ trait AltidsTrait {
 	 * @param  array  $columns
 	 * @return \Illuminate\Database\Eloquent\Model|Collection|static
 	 */
-	public static function findByAltid($altid, $columns = array('*'))
+	public static function find($altid, $columns = array('*'))
 	{
 		if (is_array($altid) && empty($altid)) return new Collection;
 
@@ -170,17 +170,15 @@ trait AltidsTrait {
 			
 			if (empty($altid)) return null;
 
-			return $instance->find($altid, $columns);
+			return parent::find($altid, $columns);
 
 		} elseif ($instance->hasSlug()) {
 
 			return $instance->_chooseWhereSlug($instance->newQuery(), $altid)->get($columns);
 
-		} else {
-
-			return $instance->_chooseWhereIn($instance->newQuery(), $altid)->get($columns);
-
 		}
+
+		return null;
 
 	}
 
@@ -298,10 +296,10 @@ trait AltidsTrait {
 
 		if (!empty($slug['disambig'])) {
 
-			if ($this->getSlugs()->getConfig('disambig_slug_field')) {
+			if ($disambigSlugName = $this->getDisambigSlugName()) {
 				return $query
 				->where($this->getSlugName(), $slug['slug'])
-				->where($this->getDisambigSlugName(), $slug['disambig']);
+				->where($disambigSlugName, $slug['disambig']);
 				
 			}
 			else {

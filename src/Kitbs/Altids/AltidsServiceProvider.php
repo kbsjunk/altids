@@ -40,16 +40,18 @@ class AltidsServiceProvider extends ServiceProvider {
 
 			if (@$model->hasSlug()) {
 				echo('creating');
+				$model->slug = $model->name;
 			}
 
 		});
-		
+
 		$this->app['events']->listen('eloquent.updating*', function($model)
 		{
 
 			if (@$model->hasSlug()) {
 				if (@$model->getSlugs()->getConfig('on_update')) {
 					echo('updating');
+					$model->slug = $model->name.'up';
 				}
 			}
 
